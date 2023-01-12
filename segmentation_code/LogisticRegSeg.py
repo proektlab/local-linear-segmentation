@@ -5,7 +5,8 @@ from sklearn.linear_model import LogisticRegression
 
 import LogisticReg_calculations as lr_c
 
-def test(window1, window2, theta1, theta2, n, per):
+
+def test(window1, window2, theta1, theta2, n, per, use_prev_choice=True):
     """
     Test for a break between window1 and window2
     window1: (inputs, decisions) for the first window (including previous choice, if using)
@@ -20,4 +21,8 @@ def test(window1, window2, theta1, theta2, n, per):
     log_ratio = ll2 - ll1
 
     # null model - assumes that the last coefficient is for previous choice
-    null_log_ratio_dist = lr_c.r_null()
+    null_log_ratio_dist = lr_c.r_null(window2[0], len(window1[0]), *theta1, n, use_prev_choice)
+    thresh = np.nanpercentile(null_log_ratio_dist, per)
+    is_outside_dist = log_ratio >= thresh
+    return is_outside_dist
+
